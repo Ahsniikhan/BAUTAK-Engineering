@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAUTEK Engineering — Pakistan Rate Based</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Calculating BOQ...</div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- APP HEADER -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="header-logo">🏗️</div>
+      <div>
+        <div class="header-title">BAUTEK Engineering</div>
+        <div class="header-subtitle">FF-459 Deans Trade Center</div>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-btn active" onclick="showPage('calculator')" id="nav-calculator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+        Calculator
+      </button>
+      <button class="nav-btn" onclick="showPage('rates')" id="nav-rates">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Rates
+      </button>
+      <button class="nav-btn" onclick="showPage('history')" id="nav-history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        History
+      </button>
+      <button class="nav-btn" onclick="showPage('dashboard')" id="nav-dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- APP BODY -->
+<main class="app-body">
+
+  <!-- ══════════════════ CALCULATOR PAGE ══════════════════ -->
+  <div class="page active" id="page-calculator">
+
+    <div class="calc-layout">
+
+      <!-- SIDEBAR: INPUT FORM -->
+      <div class="calc-sidebar">
+
+        <!-- Building Dimensions -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Building Dimensions
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="type-grid">
+              <div class="type-card selected" onclick="selectType(this,'residential')" data-type="residential">
+                <div class="type-icon">🏠</div>
+                <div class="type-name">Residential</div>
+              </div>
+              <div class="type-card" onclick="selectType(this,'commercial')" data-type="commercial">
+                <div class="type-icon">🏢</div>
+                <div class="type-name">Commercial</div>
+              </div>
+              <div class="type-card" onclick="selectType(this,'industrial')" data-type="industrial">
+                <div class="type-icon">🏭</div>
+                <div class="type-name">Industrial</div>
+              </div>
+              <div class="type-card" onclick="selectType(this,'custom')" data-type="custom">
+                <div class="type-icon">📐</div>
+                <div class="type-name">Custom</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Project Name</label>
+              <input type="text" id="projectName" placeholder="e.g. DHA Lahore — Plot 45" value="">
+            </div>
+            <div class="form-group">
+              <label>Number of Floors</label>
+              <select id="numFloors">
+                <option value="1">1 Floor (Ground)</option>
+                <option value="2">2 Floors</option>
+                <option value="3">3 Floors</option>
+                <option value="4">4 Floors</option>
+                <option value="5">5 Floors</option>
+              </select>
+            </div>
+
+            <hr class="section-divider">
+            <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Per Floor Dimensions</div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="form-group" style="margin-bottom:0">
+                <label>Length</label>
+                <div class="input-group">
+                  <input type="number" id="length" placeholder="40" min="1" max="500">
+                  <span class="input-suffix">ft</span>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label>Width</label>
+                <div class="input-group">
+                  <input type="number" id="width" placeholder="30" min="1" max="500">
+                  <span class="input-suffix">ft</span>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="form-group">
+              <label>Floor to Floor Height</label>
+              <div class="input-group">
+                <input type="number" id="height" placeholder="10" min="6" max="30">
+                <span class="input-suffix">ft</span>
+              </div>
+            </div>
+
+            <div id="areaPreview" style="background:var(--success-bg);border:1px solid #95d5a8;border-radius:var(--radius);padding:10px 12px;margin-top:4px;display:none;">
+              <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Area Preview</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;">
+                <div>
+                  <div style="font-size:18px;font-weight:800;color:var(--primary-dark)" id="prev-floor">—</div>
+                  <div style="font-size:10px;color:var(--text-muted)">per floor (sqft)</div>
+                </div>
+                <div>
+                  <div style="font-size:18px;font-weight:800;color:var(--primary-dark)" id="prev-total">—</div>
+                  <div style="font-size:10px;color:var(--text-muted)">total (sqft)</div>
+                </div>
+                <div>
+                  <div style="font-size:18px;font-weight:800;color:var(--primary-dark)" id="prev-vol">—</div>
+                  <div style="font-size:10px;color:var(--text-muted)">volume (cft)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Construction Options -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              Construction Options
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Foundation Type</label>
+              <select id="foundationType">
+                <option value="strip">Strip Foundation</option>
+                <option value="raft">Raft/Mat Foundation</option>
+                <option value="pile">Pile Foundation</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Wall Type</label>
+              <select id="wallType">
+                <option value="brick">Brick Masonry (9")</option>
+                <option value="brick45">Brick Masonry (4.5")</option>
+                <option value="block">Concrete Block</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Roof Type</label>
+              <select id="roofType">
+                <option value="rcc">RCC Slab</option>
+                <option value="precast">Pre-Cast Slab</option>
+                <option value="tee">T-Beam & Slab</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label>Finishing Level</label>
+              <select id="finishingLevel">
+                <option value="standard">Standard</option>
+                <option value="luxury">Luxury (+30%)</option>
+                <option value="economy">Economy (-20%)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculate Button -->
+        <button class="btn btn-primary btn-lg" onclick="calculateBOQ()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M9 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3"/><path d="M9 15h3l8.5-8.5a1.5 1.5 0 0 0-3-3L9 12v3"/></svg>
+          Generate BOQ & Estimate
+        </button>
+
+      </div>
+
+      <!-- MAIN: RESULTS -->
+      <div>
+        <!-- Placeholder -->
+        <div id="calc-placeholder" class="card" style="min-height:480px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+          <div style="font-size:64px">🏗️</div>
+          <div style="font-size:18px;font-weight:700;color:var(--primary-dark)">Enter Building Dimensions</div>
+          <div style="font-size:13px;color:var(--text-muted);text-align:center;max-width:320px">Fill in the dimensions and construction options on the left, then click "Generate BOQ & Estimate" to see a complete Bill of Quantities.</div>
+        </div>
+
+        <!-- Results Area -->
+        <div id="results-area">
+
+          <!-- Print Header (hidden on screen) -->
+          <div class="print-header">
+            <h1>🏗️ Bill of Quantities — BAUTEK Engineering</h1>
+            <p id="print-meta"></p>
+          </div>
+
+          <!-- Summary Cards -->
+          <div class="stats-row" id="summary-stats"></div>
+
+          <!-- Charts -->
+          <div class="chart-grid mb-16" id="charts-section">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Cost Distribution</div></div>
+              <div class="card-body" style="padding:12px">
+                <div style="height:220px;position:relative"><canvas id="pieChart" role="img" aria-label="Cost distribution by category"></canvas></div>
+                <div id="pie-legend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;justify-content:center;font-size:11px;"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Material vs Labour Split</div></div>
+              <div class="card-body" style="padding:12px">
+                <div style="height:220px;position:relative"><canvas id="barChart" role="img" aria-label="Material vs labour cost bar chart"></canvas></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOQ Table -->
+          <div class="card">
+            <div class="result-header" id="result-header">
+              <div>
+                <div class="result-title" id="result-title">Bill of Quantities</div>
+                <div class="result-meta" id="result-meta"></div>
+              </div>
+              <div class="result-total-badge">
+                <div class="result-total-label">TOTAL ESTIMATED COST</div>
+                <div class="result-total-amount" id="result-grand-total">PKR —</div>
+              </div>
+            </div>
+
+            <div class="card-body" style="padding:0">
+              <div class="boq-table-wrap">
+                <table id="boq-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Description</th>
+                      <th>Type</th>
+                      <th>Qty</th>
+                      <th>Unit</th>
+                      <th>Rate (PKR)</th>
+                      <th>Amount (PKR)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="boq-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button class="btn btn-primary" onclick="saveToHistory()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save to History
+              </button>
+              <button class="btn btn-outline" onclick="window.print()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print BOQ
+              </button>
+              <button class="btn btn-outline" onclick="exportCSV()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 1-2 2v16a2 2 0 0 1 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Export CSV
+              </button>
+              <button class="btn btn-outline" onclick="shareResult()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ RATES PAGE ══════════════════ -->
+  <div class="page" id="page-rates">
+    <div class="flex-between mb-16">
+      <div>
+        <h2 style="font-size:20px;font-weight:700;color:var(--primary-dark)">Material & Labour Rates</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Current Pakistan Market Rates (PKR) — Edit and save to update calculations</p>
+      </div>
+      <div class="flex gap-8">
+        <button class="btn btn-outline btn-sm" onclick="resetRates()">Reset Defaults</button>
+        <button class="btn btn-primary btn-sm" onclick="saveRates()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+          Save Rates
+        </button>
+      </div>
+    </div>
+
+    <div class="rates-grid" id="rates-grid">
+      <!-- populated by JS -->
+    </div>
+
+    <div style="margin-top:16px;background:var(--info-bg);border:1px solid #74c0fc;border-radius:var(--radius);padding:12px 16px;font-size:12px;color:var(--info)">
+      <strong>📌 Note:</strong> Rates are stored in your browser's local database (MongoDB simulation). Last updated: <span id="rates-last-updated">—</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════ HISTORY PAGE ══════════════════ -->
+  <div class="page" id="page-history">
+    <div class="flex-between mb-16">
+      <div>
+        <h2 style="font-size:20px;font-weight:700;color:var(--primary-dark)">Calculation History</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:2px">All saved BOQ estimates — stored in MongoDB collection <code style="font-family:var(--font-mono);background:var(--surface-2);padding:1px 5px;border-radius:3px">calculations</code></p>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="clearHistory()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        Clear All
+      </button>
+    </div>
+    <div class="history-grid" id="history-grid">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- ══════════════════ DASHBOARD PAGE ══════════════════ -->
+  <div class="page" id="page-dashboard">
+    <div class="mb-16">
+      <h2 style="font-size:20px;font-weight:700;color:var(--primary-dark)">Analytics Dashboard</h2>
+      <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Summary of all estimates stored in the database</p>
+    </div>
+
+    <div class="stats-row mb-16" id="dashboard-stats"></div>
+
+    <div class="chart-grid">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Cost Trend (Last 10 Estimates)</div></div>
+        <div class="card-body" style="padding:12px">
+          <div style="height:240px;position:relative"><canvas id="trendChart" role="img" aria-label="Cost trend line chart"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Building Types Distribution</div></div>
+        <div class="card-body" style="padding:12px">
+          <div style="height:240px;position:relative"><canvas id="typeChart" role="img" aria-label="Building types donut chart"></canvas></div>
+          <div id="type-legend" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;justify-content:center;font-size:11px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Top Estimates by Cost</div></div>
+        <div class="card-body" style="padding:0">
+          <div class="boq-table-wrap">
+            <table id="dashboard-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Project Name</th>
+                  <th>Type</th>
+                  <th>Dimensions (L×W×H)</th>
+                  <th>Area (sqft)</th>
+                  <th>Total Cost</th>
+                  <th>Cost/sqft</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- VIEW HISTORY MODAL -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="historyModal-title">BOQ Details</div>
+      <button class="modal-close" onclick="closeModal('historyModal')">×</button>
+    </div>
+    <div class="modal-body" id="historyModal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('historyModal')">Close</button>
+      <button class="btn btn-primary btn-sm" onclick="loadFromHistory()">Load & Recalculate</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
